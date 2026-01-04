@@ -1,5 +1,6 @@
 using Library_BDwAI.Models;
 using Library_BDwAI.ViewModels;
+using Library_BDwAI.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,6 +8,11 @@ namespace Library_BDwAI.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly LibraryDbContext _context;
+        public HomeController(LibraryDbContext context)
+        {
+            _context = context;
+        }
         public IActionResult Index()
         {
             return View();
@@ -25,8 +31,23 @@ namespace Library_BDwAI.Controllers
         {
             if (ModelState.IsValid)
             {
-                //TODO: sprawdzenie w bazie danych czy u¿ytkownik istnieje i logowanie
+                var user = _context.Users.FirstOrDefault(u => u.Email == model.Email && u.Password == model.Password);
+
+                if (user != null)
+                {
+                    HttpContext.Session.SetInt32("UserId", user.Id);
+                    HttpContext.Session.SetString("UserName", user.FirstName);
+                    HttpContext.Session.SetString("UserRole", user.IsAdmin ? "Admin" : "User");
+
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Nieprawid³owy email lub has³o.");
+                }
             }
+
+            // Jeœli coœ posz³o nie tak, wyœwietl formularz ponownie z b³êdami
             return View(model);
         }
         public IActionResult RegisterPage()
