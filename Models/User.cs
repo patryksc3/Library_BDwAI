@@ -14,7 +14,7 @@ namespace Library_BDwAI.Models
         [Required]
         public string Password { get; set; }
         [Required]
-        public string? PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; } = "";
         public bool IsAdmin { get; set; } = false;
         public virtual ICollection<Loan>? Loans { get; set; }
     }

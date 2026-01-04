@@ -15,11 +15,12 @@ namespace Library_BDwAI.Models
         [Required(ErrorMessage = "ISBN jest wymagany.")]
         public string ISBN { get; set; }
         [Display(Name = "Rok Wydania")]
-        public int ReleaseYear { get; set; }
+        public int PublishedYear { get; set; }
         [Display(Name = "Gatunek")]
         public int GenreId { get; set; }
         [ForeignKey("GenreId")]
         public virtual Genre? Genre { get; set; }
+        public int CopiesAvailable { get; set; }
         public virtual ICollection<Loan>? Loans { get; set; }
 
 
