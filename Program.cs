@@ -1,5 +1,6 @@
 using Library_BDwAI.Data;
 using Microsoft.EntityFrameworkCore;
+using Library_BDwAI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,7 @@ builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
-
+DatabaseHelper.InitializeDatabase(app.Environment.ContentRootPath);
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
