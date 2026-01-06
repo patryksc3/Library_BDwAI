@@ -60,6 +60,12 @@ namespace Library_BDwAI.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existingUser = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("Email", "U¿ytkownik o podanym emailu ju¿ istnieje.");
+                    return View(model);
+                }
                 User newUser = new User
                 {
                     FirstName = model.FirstName,
@@ -69,11 +75,16 @@ namespace Library_BDwAI.Controllers
                     Password = model.Password
                 };
 
-                //TODO: dodanie u¿ytkownika do bazy danych
+                _context.Users.Add(newUser);
 
                 return RedirectToAction("LoginPage");
             }
             return View(model);
+        }
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
