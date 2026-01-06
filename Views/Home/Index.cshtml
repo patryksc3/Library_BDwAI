@@ -1,7 +1,28 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
     ViewData["Title"] = "Home Page";
+    var isLoggedIn = Context.Session.GetString("UserId") != null;
+    var userRole = Context.Session.GetString("UserRole");
+    var isAdmin = userRole == "Admin";
 }
-
+<ul>
+    @if (isAdmin)
+    {
+        <li><a asp-controller="Loans" asp-action="AddLoan">Wypożycz książkę</a></li>
+        <li><a asp-controller="Loans" asp-action="FinishLoan">Zwrot książki</a></li>
+        <li><a asp-controller="Books" asp-action="AddBook">Zarejestruj nową książkę</a></li>
+        <li><a asp-controller="Books" asp-action="BooksList">Sprawdź dostępność książek</a></li>
+    }
+    else
+    {
+        @if (isLoggedIn)
+        {
+            <li><a asp-controller="Loans" asp-action="MyLoans">Moje wypożyczenia</a></li>
+        }
+        <li><a asp-controller="Books" asp-action="AvaibleBooks">Lista dostępnych książek</a></li>
+    }
+</ul>
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
