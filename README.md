@@ -1,13 +1,13 @@
-# System Zarzπdania bibliotekπ
+# System ZarzƒÖdania bibliotekƒÖ
 
 ---
 
-## Przyk≥adowe dane logowania:
+## Przyk≈Çadowe dane logowania:
 
 ### Administrator
 - Email: a@example.com
-- Has≥o: AdminPass123
+- Has≈Ço: AdminPass123
 
-### Uøytkownik
+### U≈ºytkownik
 - Email: john24@example.com
-- Has≥o: UserPass456
+- Has≈Ço: UserPass456
