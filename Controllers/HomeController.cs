@@ -76,6 +76,7 @@ namespace Library_BDwAI.Controllers
                 };
 
                 _context.Users.Add(newUser);
+                _context.SaveChangesAsync();
 
                 return RedirectToAction("LoginPage");
             }
