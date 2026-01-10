@@ -6,24 +6,73 @@
     var userRole = Context.Session.GetString("UserRole");
     var isAdmin = userRole == "Admin";
 }
-<ul>
-    @if (isAdmin)
-    {
-        <li><a asp-controller="Loans" asp-action="AddLoan">Wypożycz książkę</a></li>
-        <li><a asp-controller="Loans" asp-action="FinishLoan">Zwrot książki</a></li>
-        <li><a asp-controller="Books" asp-action="AddBook">Zarejestruj nową książkę</a></li>
-        <li><a asp-controller="Books" asp-action="BooksList">Sprawdź dostępność książek</a></li>
-    }
-    else
-    {
-        @if (isLoggedIn)
+
+<div class="container py-4">
+    <h1 class="display-5 mb-4">Witaj w bibliotece</h1>
+
+    <div class="row g-3">
+        @if (isAdmin)
         {
-            <li><a asp-controller="Loans" asp-action="MyLoans">Moje wypożyczenia</a></li>
+            <div class="col-12">
+                <div class="alert alert-primary mb-3">Panel administratora</div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a class="card h-100 text-decoration-none shadow-sm" asp-controller="Loans" asp-action="AddLoan">
+                    <div class="card-body d-flex flex-column">
+                        <div class="fw-bold mb-2">Wypożycz książkę</div>
+                        <div class="text-muted small">Zarejestruj nowe wypożyczenie</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a class="card h-100 text-decoration-none shadow-sm" asp-controller="Loans" asp-action="FinishLoan">
+                    <div class="card-body d-flex flex-column">
+                        <div class="fw-bold mb-2">Zwrot książki</div>
+                        <div class="text-muted small">Przyjmij zwracaną pozycję</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a class="card h-100 text-decoration-none shadow-sm" asp-controller="Books" asp-action="AddBook">
+                    <div class="card-body d-flex flex-column">
+                        <div class="fw-bold mb-2">Zarejestruj nową książkę</div>
+                        <div class="text-muted small">Dodaj tytuł do katalogu</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <a class="card h-100 text-decoration-none shadow-sm" asp-controller="Books" asp-action="BooksList">
+                    <div class="card-body d-flex flex-column">
+                        <div class="fw-bold mb-2">Sprawdź dostępność</div>
+                        <div class="text-muted small">Przeglądaj wszystkie książki</div>
+                    </div>
+                </a>
+            </div>
         }
-        <li><a asp-controller="Books" asp-action="AvaibleBooks">Lista dostępnych książek</a></li>
-    }
-</ul>
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        else
+        {
+            @if (isLoggedIn)
+            {
+                <div class="col-12">
+                    <div class="alert alert-success mb-3">Twoje konto</div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <a class="card h-100 text-decoration-none shadow-sm" asp-controller="Loans" asp-action="MyLoans">
+                        <div class="card-body d-flex flex-column">
+                            <div class="fw-bold mb-2">Moje wypożyczenia</div>
+                            <div class="text-muted small">Sprawdź aktualne wypożyczenia</div>
+                        </div>
+                    </a>
+                </div>
+            }
+            <div class="col-sm-6 col-lg-3">
+                <a class="card h-100 text-decoration-none shadow-sm" asp-controller="Books" asp-action="BooksList">
+                    <div class="card-body d-flex flex-column">
+                        <div class="fw-bold mb-2">Lista dostępnych książek</div>
+                        <div class="text-muted small">Przeglądaj katalog i dostępność</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
 </div>
