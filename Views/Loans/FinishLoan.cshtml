@@ -1,0 +1,55 @@
+@model IEnumerable<Library_BDwAI.Models.Loan>
+
+@{
+    ViewData["Title"] = "Zwrot ksi¹¿ki";
+}
+
+<div class="container mt-4">
+    <h1>Zwrot ksi¹¿ki</h1>
+    <hr />
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Brak aktywnych wypo¿yczeñ.</div>
+    }
+    else
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>U¿ytkownik</th>
+                    <th>Ksi¹¿ka</th>
+                    <th>Data wypo¿yczenia</th>
+                    <th class="text-center">Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loan in Model)
+                {
+                    <tr>
+                        <td>@loan.User?.Email</td>
+                        <td>@loan.Book?.Title</td>
+                        <td>@loan.LoanDate.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td class="text-center">
+                            <form asp-action="FinishLoan" method="post" style="display:inline;">
+                                <input type="hidden" name="loanId" value="@loan.Id" />
+                                <button type="submit" class="btn btn-success btn-sm">Zwróæ</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary mt-3">Powrót</a>
+</div>

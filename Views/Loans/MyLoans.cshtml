@@ -1,0 +1,67 @@
+@model IEnumerable<Library_BDwAI.Models.Loan>
+
+@{
+    ViewData["Title"] = "Moje wypo¿yczenia";
+}
+
+<div class="container mt-4">
+    <h1>Moje wypo¿yczenia</h1>
+    <hr />
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Nie masz ¿adnych wypo¿yczeñ.</div>
+    }
+    else
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tytu³</th>
+                    <th>Autor</th>
+                    <th>Gatunek</th>
+                    <th>Data wypo¿yczenia</th>
+                    <th>Data zwrotu</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loan in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">@loan.Book?.Title</td>
+                        <td>@loan.Book?.Author</td>
+                        <td>
+                            <span class="badge bg-info text-dark">
+                                @(loan.Book?.Genre?.Name ?? "Brak")
+                            </span>
+                        </td>
+                        <td>@loan.LoanDate.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            @if (loan.ReturnDate.HasValue)
+                            {
+                                @loan.ReturnDate.Value.ToString("dd.MM.yyyy")
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td>
+                            @if (loan.ReturnDate.HasValue)
+                            {
+                                <span class="badge bg-success">Zwrócona</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Wypo¿yczona</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary mt-3">Powrót</a>
+</div>

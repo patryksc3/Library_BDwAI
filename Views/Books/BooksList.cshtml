@@ -68,7 +68,7 @@
                         {
                             @if (item.CopiesAvailable > 0)
                             {
-                                <a asp-action="Borrow" asp-route-id="@item.Id" class="btn btn-success btn-sm mx-1">Wypożycz</a>
+                                <a asp-controller="Loans" asp-action="AddLoan" asp-route-id="@item.Id" class="btn btn-success btn-sm mx-1">Wypożycz</a>
                             }
                             else
                             {

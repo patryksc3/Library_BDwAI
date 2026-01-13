@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Wypo¿ycz ksi¹¿kê";
+}
+
+<div class="container mt-4">
+    <h1>Wypo¿ycz ksi¹¿kê</h1>
+    <hr />
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <form asp-action="AddLoan" method="post">
+        <div class="mb-3">
+            <label for="userId" class="form-label">U¿ytkownik</label>
+            <select id="userId" name="userId" class="form-select" required>
+                <option value="">-- Wybierz u¿ytkownika --</option>
+                @foreach (var item in ViewBag.UsersList as SelectList)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="bookId" class="form-label">Ksi¹¿ka</label>
+            <select id="bookId" name="bookId" class="form-select" required>
+                <option value="">-- Wybierz ksi¹¿kê --</option>
+                @foreach (var item in ViewBag.BooksList as SelectList)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Zarejestruj wypo¿yczenie</button>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Anuluj</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}   
