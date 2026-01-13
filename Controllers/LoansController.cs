@@ -20,7 +20,6 @@ namespace Library_BDwAI.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Loans/AddLoan
         public async Task<IActionResult> AddLoan()
         {
             ViewBag.UsersList = new SelectList(
@@ -38,7 +37,6 @@ namespace Library_BDwAI.Controllers
             return View();
         }
 
-        // POST: Loans/AddLoan
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddLoan(int userId, int bookId)
@@ -75,7 +73,6 @@ namespace Library_BDwAI.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Loans/Borrow/5 - dla zalogowanego użytkownika
         public async Task<IActionResult> Borrow(int? id)
         {
             if (id == null)
@@ -115,8 +112,6 @@ namespace Library_BDwAI.Controllers
             TempData["Success"] = $"Wypożyczono książkę \"{book.Title}\".";
             return RedirectToAction(nameof(MyLoans));
         }
-
-        // GET: Loans/FinishLoan
         public async Task<IActionResult> FinishLoan()
         {
             var activeLoans = await _context.Loans
@@ -128,7 +123,6 @@ namespace Library_BDwAI.Controllers
             return View(activeLoans);
         }
 
-        // POST: Loans/FinishLoan
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FinishLoan(int loanId)
@@ -157,7 +151,6 @@ namespace Library_BDwAI.Controllers
             return RedirectToAction(nameof(FinishLoan));
         }
 
-        // GET: Loans/MyLoans (dla zalogowanego użytkownika)
         public async Task<IActionResult> MyLoans()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
@@ -174,6 +167,27 @@ namespace Library_BDwAI.Controllers
                 .ToListAsync();
 
             return View(loans);
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Books
+                .Include(b => b.Genre)
+                .Include(b => b.Loans)
+                    .ThenInclude(l => l.User)   
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return View(book);
         }
     }
 }

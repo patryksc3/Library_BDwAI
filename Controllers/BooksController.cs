@@ -99,5 +99,26 @@ namespace Library_BDwAI.Controllers
 
             return RedirectToAction(nameof(BooksList));
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Books
+                .Include(b => b.Genre)
+                .Include(b => b.Loans)
+                    .ThenInclude(l => l.User)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return View(book);
+        }
     }
 }       

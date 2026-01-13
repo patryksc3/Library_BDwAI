@@ -1,0 +1,146 @@
+@model Library_BDwAI.Models.Book
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Szczegó³y ksi¹¿ki";
+    var userRole = Context.Session.GetString("UserRole");
+    var userId = Context.Session.GetInt32("UserId");
+    var isAdmin = userRole == "Admin";
+    var isLoggedIn = userId != null;
+
+    var activeLoans = Model.Loans?.Where(l => l.ReturnDate == null).ToList() ?? new List<Library_BDwAI.Models.Loan>();
+    var loanHistory = Model.Loans?.Where(l => l.ReturnDate != null).OrderByDescending(l => l.ReturnDate).ToList() ?? new List<Library_BDwAI.Models.Loan>();
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Szczegó³y ksi¹¿ki</h1>
+        <a asp-action="BooksList" class="btn btn-secondary">Powrót do listy</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <h2 class="card-title">@Model.Title</h2>
+                    <h5 class="text-muted">@Model.Author</h5>
+                </div>
+                <div class="col-md-4 text-end">
+                    @if (Model.CopiesAvailable > 0)
+                    {
+                        <span class="badge bg-success fs-5">@Model.CopiesAvailable egz. dostêpne</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger fs-5">Niedostêpna</span>
+                    }
+                </div>
+            </div>
+
+            <hr />
+
+            <dl class="row">
+                <dt class="col-sm-3">ISBN</dt>
+                <dd class="col-sm-9">@Model.ISBN</dd>
+
+                <dt class="col-sm-3">Rok wydania</dt>
+                <dd class="col-sm-9">@Model.PublishedYear</dd>
+
+                <dt class="col-sm-3">Gatunek</dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-info text-dark">
+                        @(Model.Genre != null ? Model.Genre.Name : "Brak")
+                    </span>
+                </dd>
+
+                <dt class="col-sm-3">Liczba egzemplarzy</dt>
+                <dd class="col-sm-9">@Model.CopiesAvailable</dd>
+            </dl>
+
+            <div class="mt-4">
+                @if (isAdmin)
+                {
+                    <a asp-action="EditBook" asp-route-id="@Model.Id" class="btn btn-warning me-2">Edytuj</a>
+                    <a asp-action="DeleteBook" asp-route-id="@Model.Id" class="btn btn-danger">Usuñ</a>
+                }
+                else if (isLoggedIn && Model.CopiesAvailable > 0)
+                {
+                    <a asp-controller="Loans" asp-action="Borrow" asp-route-id="@Model.Id" class="btn btn-success">Wypo¿ycz</a>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (isAdmin && Model.Loans != null && Model.Loans.Any())
+    {
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Historia wypo¿yczeñ</h5>
+            </div>
+            <div class="card-body">
+                @if (activeLoans.Any())
+                {
+                    <h6 class="text-warning">Aktywne wypo¿yczenia (@activeLoans.Count)</h6>
+                    <table class="table table-sm table-hover mb-4">
+                        <thead class="table-light">
+                            <tr>
+                                <th>U¿ytkownik</th>
+                                <th>Data wypo¿yczenia</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var loan in activeLoans)
+                            {
+                                <tr>
+                                    <td>@(loan.User?.Email ?? "Nieznany")</td>
+                                    <td>@loan.LoanDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td><span class="badge bg-warning text-dark">Wypo¿yczona</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+                @if (loanHistory.Any())
+                {
+                    <h6 class="text-success">Zwrócone wypo¿yczenia (@loanHistory.Count)</h6>
+                    <table class="table table-sm table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>U¿ytkownik</th>
+                                <th>Data wypo¿yczenia</th>
+                                <th>Data zwrotu</th>
+                                <th>Czas wypo¿yczenia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var loan in loanHistory.Take(10))
+                            {
+                                var duration = loan.ReturnDate.HasValue 
+                                    ? (loan.ReturnDate.Value - loan.LoanDate).Days 
+                                    : 0;
+                                <tr>
+                                    <td>@(loan.User?.Email ?? "Nieznany")</td>
+                                    <td>@loan.LoanDate.ToString("dd.MM.yyyy")</td>
+                                    <td>@loan.ReturnDate?.ToString("dd.MM.yyyy")</td>
+                                    <td>@duration dni</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    @if (loanHistory.Count > 10)
+                    {
+                        <p class="text-muted small">Wyœwietlono 10 z @loanHistory.Count zwróconych wypo¿yczeñ.</p>
+                    }
+                }
+
+                @if (!activeLoans.Any() && !loanHistory.Any())
+                {
+                    <p class="text-muted">Ksi¹¿ka nie by³a jeszcze wypo¿yczana.</p>
+                }
+            </div>
+        </div>
+    }
+</div>
