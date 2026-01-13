@@ -21,7 +21,7 @@ namespace Library_BDwAI.Controllers
         }
 
         // GET: Loans/AddLoan
-        public async Task<IActionResult> AddLoan()
+        public async Task<IActionResult> AddLoan(int id)
         {
             ViewBag.UsersList = new SelectList(
                 await _context.Users.Where(u => !u.IsAdmin).ToListAsync(),
@@ -35,44 +35,62 @@ namespace Library_BDwAI.Controllers
                 "Title"
             );
 
+            var loan = new Loan();
+
+            if (id != 0)
+            {
+                loan.BookId = id;
+                return View(loan);
+            }
+
             return View();
         }
 
-        // POST: Loans/AddLoan
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddLoan(int userId, int bookId)
+        public async Task<IActionResult> AddLoan(Loan l)
         {
-            var book = await _context.Books.FindAsync(bookId);
-            if (book == null || book.CopiesAvailable <= 0)
+            l.Id = 0;
+            ModelState.Remove("Book");
+            ModelState.Remove("User");
+
+            if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Wybrana książka nie jest dostępna.";
-                return RedirectToAction(nameof(AddLoan));
+                await ReloadViewBags();
+                return View(l);
             }
 
-            var user = await _context.Users.FindAsync(userId);
+            var book = await _context.Books.FindAsync(l.BookId);
+            var user = await _context.Users.FindAsync(l.UserId);
+
+            if (book == null || book.CopiesAvailable <= 0)
+            {
+                TempData["Error"] = "Wybrana książka jest niedostępna.";
+                await ReloadViewBags();
+                return View(l); 
+            }
+
             if (user == null)
             {
                 TempData["Error"] = "Wybrany użytkownik nie istnieje.";
-                return RedirectToAction(nameof(AddLoan));
+                await ReloadViewBags();
+                return View(l);
             }
 
-            var loan = new Loan
-            {
-                UserId = userId,
-                BookId = bookId,
-                LoanDate = DateTime.Now,
-                ReturnDate = null
-            };
-
             book.CopiesAvailable--;
+            _context.Loans.Add(l);
 
-            _context.Loans.Add(loan);
-            _context.Books.Update(book);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Wypożyczenie książki \"{book.Title}\" dla {user.Email} zostało zarejestrowane.";
-            return RedirectToAction("Index", "Home");
+            TempData["Success"] = $"Wypożyczenie \"{book.Title}\" dla {user.Email} zarejestrowane.";
+
+            return RedirectToAction(nameof(FinishLoan));
+        }
+
+        private async Task ReloadViewBags()
+        {
+            ViewBag.UsersList = new SelectList(await _context.Users.Where(u => !u.IsAdmin).ToListAsync(), "Id", "Email");
+            ViewBag.BooksList = new SelectList(await _context.Books.Where(b => b.CopiesAvailable > 0).ToListAsync(), "Id", "Title");
         }
 
         // GET: Loans/Borrow/5 - dla zalogowanego użytkownika
@@ -122,7 +140,7 @@ namespace Library_BDwAI.Controllers
             var activeLoans = await _context.Loans
                 .Include(l => l.Book)
                 .Include(l => l.User)
-                .Where(l => l.ReturnDate == null)
+                .Where(l => !l.IsReturned)
                 .ToListAsync();
 
             return View(activeLoans);
@@ -137,19 +155,19 @@ namespace Library_BDwAI.Controllers
                 .Include(l => l.Book)
                 .FirstOrDefaultAsync(l => l.Id == loanId);
 
-            if (loan == null || loan.ReturnDate != null)
+            if (loan == null || loan.IsReturned)
             {
                 TempData["Error"] = "Wypożyczenie nie istnieje lub zostało już zwrócone.";
                 return RedirectToAction(nameof(FinishLoan));
             }
 
-            loan.ReturnDate = DateTime.Now;
+            
             if (loan.Book != null)
             {
                 loan.Book.CopiesAvailable++;
                 _context.Books.Update(loan.Book);
             }
-
+            loan.IsReturned = true;
             _context.Loans.Update(loan);
             await _context.SaveChangesAsync();
 

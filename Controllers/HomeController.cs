@@ -18,7 +18,7 @@ namespace Library_BDwAI.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Contact()
         {
             return View();
         }

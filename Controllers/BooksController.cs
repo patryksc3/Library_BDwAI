@@ -108,7 +108,7 @@ namespace Library_BDwAI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteBook(int id, int copiesToRemove)
+        public async Task<IActionResult> DeleteBook(int id)
         {
             var book = await _context.Books.FindAsync(id);
 
@@ -116,26 +116,11 @@ namespace Library_BDwAI.Controllers
             {
                 return NotFound();
             }
+            _context.Books.Remove(book);
 
-            if (copiesToRemove <= 0 || copiesToRemove > book.CopiesAvailable)
-            {
-                TempData["Error"] = "Nieprawidłowa liczba egzemplarzy do usunięcia.";
-                return RedirectToAction(nameof(BooksList));
-            }
-
-            book.CopiesAvailable -= copiesToRemove;
-
-            if (book.CopiesAvailable <= 0)
-            {
-                _context.Books.Remove(book);
-            }
-            else
-            {
-                _context.Books.Update(book);
-            }
 
             await _context.SaveChangesAsync();
-            TempData["Success"] = $"Usunięto {copiesToRemove} egz. książki \"{book.Title}\".";
+            TempData["Success"] = $"Książka {book.Title} została usunięta";
 
             return RedirectToAction(nameof(BooksList));
         }

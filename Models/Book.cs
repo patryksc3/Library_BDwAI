@@ -20,6 +20,7 @@ namespace Library_BDwAI.Models
         public int GenreId { get; set; }
         [ForeignKey("GenreId")]
         public virtual Genre? Genre { get; set; }
+        [Display(Name = "Ilość dostępnych kopii")]
         public int CopiesAvailable { get; set; }
         public virtual ICollection<Loan>? Loans { get; set; }
 

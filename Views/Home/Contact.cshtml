@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Kontakt";
+}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+
+            <h1 class="mb-4">Kontakt</h1>
+            <p class="lead text-muted mb-5">
+                Masz pytania? Jesteśmy do Twojej dyspozycji.
+            </p>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+
+                    <div class="mb-4">
+                        <h4 class="text-uppercase text-secondary" style="font-size: 0.9rem; letter-spacing: 1px;">
+                            Zadzwoń do nas
+                        </h4>
+                        <a href="tel:+48123456789" class="text-decoration-none text-dark fs-3 fw-bold">
+                            +48 123 456 789
+                        </a>
+                        <p class="text-muted small mt-1">Pn-Pt: 8:00 - 16:00</p>
+                    </div>
+
+                    <hr class="my-4 w-50 mx-auto opacity-25">
+
+                    <div class="mb-2">
+                        <h4 class="text-uppercase text-secondary" style="font-size: 0.9rem; letter-spacing: 1px;">
+                            Napisz wiadomość
+                        </h4>
+                        <a href="mailto:kontakt@biblioteka.pl" class="text-decoration-none fs-4">
+                            kontakt@biblioteka.pl
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                    &larr; Wróć do strony głównej
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
