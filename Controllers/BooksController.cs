@@ -47,6 +47,46 @@ namespace Library_BDwAI.Controllers
             return View(await books.ToListAsync());
         }
 
+        public async Task<IActionResult> EditBook(int id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var book = await _context.Books.FindAsync(id);
+            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Name", book.GenreId);
+            return View(book);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditBook(int id, Book book)
+        {
+            if (id != book.Id)
+            {
+                return NotFound();
+            }
+            var existingBook = await _context.Books.FindAsync(id);
+
+            if (existingBook == null) {
+                return NotFound();
+            }
+
+
+            if (ModelState.IsValid)
+            {
+                existingBook.CopiesAvailable = book.CopiesAvailable;
+                existingBook.Title = book.Title;
+                existingBook.Author = book.Author;
+                existingBook.ISBN = book.ISBN;
+                existingBook.PublishedYear = book.PublishedYear;
+                existingBook.GenreId = book.GenreId;
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(BooksList));
+            }
+            return View(book);
+        }
+
         public async Task<IActionResult> DeleteBook(int? id)
         {
             if (id == null)
