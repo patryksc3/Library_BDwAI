@@ -29,6 +29,7 @@
                     <th>U¿ytkownik</th>
                     <th>Ksi¹¿ka</th>
                     <th>Data wypo¿yczenia</th>
+                    <th>Termin Zwrotu</th>
                     <th class="text-center">Akcje</th>
                 </tr>
             </thead>
@@ -39,6 +40,15 @@
                         <td>@loan.User?.Email</td>
                         <td>@loan.Book?.Title</td>
                         <td>@loan.LoanDate.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>
+                            @if (loan.ReturnDate.HasValue)
+                            {
+                                @loan.ReturnDate.Value.ToString("dd.MM.yyyy")
+                                @if(loan.ReturnDate.Value < DateTime.Now)
+                                {
+                                    <span class="badge bg-danger ms-2">SpóŸniony zwrot!</span>
+                                }
+                            }
                         <td class="text-center">
                             <form asp-action="FinishLoan" method="post" style="display:inline;">
                                 <input type="hidden" name="loanId" value="@loan.Id" />

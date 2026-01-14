@@ -48,13 +48,20 @@
                             }
                         </td>
                         <td>
-                            @if (loan.ReturnDate.HasValue)
+                            @if (loan.IsReturned)
                             {
                                 <span class="badge bg-success">Zwrócona</span>
                             }
                             else
                             {
-                                <span class="badge bg-warning text-dark">Wypo¿yczona</span>
+                                @if (loan.ReturnDate.HasValue && loan.ReturnDate.Value < DateTime.Now)
+                                {
+                                    <span class="badge bg-danger">SpóŸniony zwrot!</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Wypo¿yczona</span>
+                                }
                             }
                         </td>
                     </tr>

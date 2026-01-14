@@ -167,7 +167,7 @@ namespace Library_BDwAI.Controllers
                 loan.Book.CopiesAvailable++;
                 _context.Books.Update(loan.Book);
             }
-            loan.IsReturned = true;
+            loan.IsReturned = true; 
             _context.Loans.Update(loan);
             await _context.SaveChangesAsync();
 
